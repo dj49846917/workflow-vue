@@ -60,7 +60,7 @@
           >
             <template slot-scope="scope">
               <el-form-item :prop="scope.row.groupNm">
-                <el-input v-model="scope.row.groupNm" placeholder="组织" @focus="openGroupTree" />
+                <el-input v-model="scope.row.groupNm" placeholder="组织" @focus="()=>openGroupTree(scope.$index)" />
               </el-form-item>
             </template>
           </el-table-column>
@@ -132,7 +132,9 @@ export default {
   },
   data() {
     return {
-      groupStatus: false // 组织树弹窗状态
+      groupStatus: false, // 组织树弹窗状态
+	  groupRow: {}, // 组织树选中的数据
+	  rowIndex: null, // 当前行的下标
     }
   },
   computed: {
@@ -169,18 +171,22 @@ export default {
         orgNo:'',
         positionNm: '',
         positionNo: '',
-        id: newArray.length += 1
+        id: Math.random()
       }
       newArray.push(obj)
       console.log('arr', newArray)
       this.$emit('changeArrayNum', newArray)
     },
     // 打开机构树
-    openGroupTree() {
+    openGroupTree(index) {
+		this.rowIndex = index
       this.groupStatus = true
     },
+	// 获取子组件传过来选中的树节点
 	updateGroupStatus(code) {
 	  this.groupStatus = false
+	  this.groupRow = code.rowData
+	  this.$emit('getChooseGroupTree', this.groupRow, this.rowIndex)
 	}
   }
 }

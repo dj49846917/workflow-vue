@@ -149,6 +149,7 @@
       :rule-list="ruleList"
       @changeVisible="updateVisible"
       @changeArrayNum="updateArrayNum"
+	  @getChooseGroupTree="updateChooseGroupTree"
     />
   </div>
 </template>
@@ -281,7 +282,14 @@ export default {
     updateArrayNum(code) {
       console.log('3', code)
       this.userRule = code
-    }
+    },
+	// 获取子组件传来的数据
+	updateChooseGroupTree(row, index) {
+		console.log('row', row, index)
+		console.log('44', this.userRule[index])
+		this.userRule[index].groupNm = row.groupNm
+		this.userRule[index].groupNo = row.groupNo
+	}
   }
 }
 </script>
