@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog title="机构树" :visible="visible" width="40%" :before-close="modalClose">
+    <el-dialog title="岗位树" :visible="visible" width="40%" :before-close="modalClose">
       <el-tree
         :props="defaultProps"
         node-key="_id"
@@ -60,18 +60,17 @@ export default {
     // 首次加载一级节点数据函数
     requestTree(resolve) {
       const params = {
-        parentEnumKey: '01'
+        parentEnumKey: '00000000'
       }
-      this.$store.dispatch('extend/getOrg', params).then(() => {
-        console.log('22')
-        this.extend.orgList.forEach(item => {
+      this.$store.dispatch('extend/getPos', params).then(() => {
+        this.extend.posList.forEach(item => {
           if (item.isLeaf === '1') {
             item.leaf = false // 为叶子节点
           } else {
             item.leaf = true // 不为叶子节点
           }
         })
-		  resolve(this.extend.orgList)
+		  resolve(this.extend.posList)
       })
     },
 
@@ -80,15 +79,15 @@ export default {
       const params = {
         parentEnumKey: node.data.enumKey
       }
-      this.$store.dispatch('extend/getOrg', params).then(() => {
-		  this.extend.orgList.forEach(item => {
+      this.$store.dispatch('extend/getPos', params).then(() => {
+		  this.extend.posList.forEach(item => {
           if (item.isLeaf === '1') {
             item.leaf = false // 为叶子节点
           } else {
             item.leaf = true // 不为叶子节点
           }
         })
-		  resolve(this.extend.orgList)
+		  resolve(this.extend.posList)
       })
     },
 
@@ -96,7 +95,7 @@ export default {
     modalClose() {
       const params = {}
       params.status = false
-      this.$emit('changeOrgStatus', false) // 直接修改父组件的属性
+      this.$emit('changePosStatus', false) // 直接修改父组件的属性
     },
     // 确定
     save() {
@@ -111,7 +110,7 @@ export default {
       const params = {}
       params.status = false
       params.rowData = this.treeRowData
-      this.$emit('changeOrgStatus', params)
+      this.$emit('changePosStatus', params)
     }
   }
 }

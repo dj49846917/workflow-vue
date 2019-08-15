@@ -21,7 +21,7 @@ export default {
         children: 'children',
         label: 'groupNm'
       },
-	  treeRowData: {}, // 树选中的数据
+	  treeRowData: {} // 树选中的数据
     }
   },
   computed: {
@@ -38,27 +38,27 @@ export default {
       console.log(data)
 	  this.treeRowData = data
     },
-	// 取消
+    // 取消
     modalClose() {
-		const params = {}
-		params.status = false
+      const params = {}
+      params.status = false
       this.$emit('changeGroupStatus', false) // 直接修改父组件的属性
     },
-	// 确定
-	save() {
-		if(JSON.stringify(this.treeRowData) === '{}'){
-			this.$message({
-				showClose: true,
-				message: '请选择一条数据',
-				type: 'warning'
-			})
-			return 
-		}
-		const params = {}
-		params.status = false
-		params.rowData = this.treeRowData
-		this.$emit('changeGroupStatus', params)
-	}
+    // 确定
+    save() {
+      if (JSON.stringify(this.treeRowData) === '{}') {
+        this.$message({
+          showClose: true,
+          message: '请选择一条数据',
+          type: 'warning'
+        })
+        return
+      }
+      const params = {}
+      params.status = false
+      params.rowData = this.treeRowData
+      this.$emit('changeGroupStatus', params)
+    }
   }
 }
 </script>
