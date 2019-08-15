@@ -87,7 +87,7 @@
           >
             <template slot-scope="scope">
               <el-form-item :prop="scope.row.orgNm">
-                <el-input v-model="scope.row.orgNm" placeholder="机构" />
+                <el-input v-model="scope.row.orgNm" placeholder="机构" @focus="()=>openOrgTree(scope.$index)" />
               </el-form-item>
             </template>
           </el-table-column>
@@ -109,15 +109,21 @@
       </el-form>
     </el-dialog>
     <group-tree
-	  :v-if="groupStatus"
+	    :v-if="groupStatus"
       :visible="groupStatus"
-	  @changeGroupStatus="updateGroupStatus"
+	    @changeGroupStatus="updateGroupStatus"
+    />
+    <org-tree
+	    :v-if="orgAndPosStatus"
+		:visible="orgAndPosStatus"
+	    @changeOrgAndPosStatus="updateOrgAndPosStatus"
     />
   </div>
 </template>
 <script>
 import { mapState } from 'vuex'
 import groupTree from '@/views/workflow/define/extend/groupTree'
+import orgTree from '@/views/workflow/define/extend/orgTree'
 export default {
   name: 'ExtendAddList',
   props: {
@@ -128,13 +134,15 @@ export default {
     primary: { type: String }
   },
   components: {
-    groupTree
+    groupTree,
+    orgTree
   },
   data() {
     return {
       groupStatus: false, // 组织树弹窗状态
-	  groupRow: {}, // 组织树选中的数据
-	  rowIndex: null, // 当前行的下标
+	    groupRow: {}, // 组织树选中的数据
+	    rowIndex: null, // 当前行的下标
+      orgAndPosStatus: false, // 机构或者岗位树弹窗状态
     }
   },
   computed: {
@@ -177,17 +185,28 @@ export default {
       console.log('arr', newArray)
       this.$emit('changeArrayNum', newArray)
     },
-    // 打开机构树
+    // 打开组织树
     openGroupTree(index) {
 		this.rowIndex = index
       this.groupStatus = true
     },
-	// 获取子组件传过来选中的树节点
-	updateGroupStatus(code) {
-	  this.groupStatus = false
-	  this.groupRow = code.rowData
-	  this.$emit('getChooseGroupTree', this.groupRow, this.rowIndex)
-	}
+	// 打开机构树
+    openOrgTree(index) {
+		this.rowIndex = index
+		this.orgAndPosStatus = true
+    },
+    // 获取子组件传过来选中的组织树节点
+    updateGroupStatus(code) {
+      this.groupStatus = false
+      this.groupRow = code.rowData
+      this.$emit('getChooseGroupTree', this.groupRow, this.rowIndex)
+    },
+    // 获取子组件传过来选中的机构树节点
+    updateOrgAndPosStatus(code) {
+      this.orgAndPosStatus = false
+      // this.groupRow = code.rowData
+      // this.$emit('getChooseGroupTree', this.groupRow, this.rowIndex)
+    }
   }
 }
 </script>

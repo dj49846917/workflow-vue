@@ -14,7 +14,8 @@ const state = {
   detailData: {}, // 编辑初始化数据
   dicList: [], // 数据字典
   lastNodeList: [], // 上一节点列表
-  groupList: [] // 组织树数据
+  groupList: [], // 组织树数据
+  orgList: [] // 机构树
 }
 
 const mutations = {
@@ -32,6 +33,9 @@ const mutations = {
   },
   group: (state, data) => {
     state.groupList = data
+  },
+  org: (state, data) => {
+    state.orgList = data
   }
 }
 
@@ -85,6 +89,17 @@ const actions = {
     return new Promise((resolve, reject) => {
       groupList(payload).then(response => {
         commit('group', response.ResponseBody.RetList)
+        resolve()
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  // 机构
+  getOrg({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+      orgList(payload).then(response => {
+        commit('org', response.ResponseBody.RetList)
         resolve()
       }).catch(error => {
         reject(error)
