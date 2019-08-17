@@ -12,20 +12,26 @@
       <el-form
         ref="ruleForm"
         size="mini"
+        :model="form"
+        :status-icon="true"
       >
         <el-table
-          :data="list"
+          :data="form.extendTable"
           highlight-current-row
           style="width: 100%"
           border
           size="mini"
         >
           <el-table-column
-            property="userRuleNm"
             label="规则"
           >
             <template slot-scope="scope">
-              <el-form-item :prop="scope.row.userRuleNm">
+              <el-form-item
+                :prop="'extendTable.'+scope.$index+'.userRuleNm'"
+                :rules="[
+                  { required: true, message: '规则不能为空', trigger: 'change' }
+                ]"
+              >
                 <el-select v-model="scope.row.userRuleNm" clearable placeholder="请选择">
                   <el-option
                     v-for="item in ruleList"
@@ -38,11 +44,15 @@
             </template>
           </el-table-column>
           <el-table-column
-            property="taskDefinitionName"
             label="上一节点"
           >
             <template slot-scope="scope">
-              <el-form-item :prop="scope.row.taskDefinitionName">
+              <el-form-item
+                :prop="'extendTable.'+scope.$index+'.taskDefinitionName'"
+                :rules="[
+                  { required: true, message: '上一节点不能为空', trigger: 'change' }
+                ]"
+              >
                 <el-select v-model="scope.row.taskDefinitionName" clearable placeholder="请选择">
                   <el-option
                     v-for="item in extend.lastNodeList"
@@ -55,21 +65,29 @@
             </template>
           </el-table-column>
           <el-table-column
-            property="groupNm"
             label="组织"
           >
             <template slot-scope="scope">
-              <el-form-item :prop="scope.row.groupNm">
+              <el-form-item
+                :prop="'extendTable.'+scope.$index+'.groupNm'"
+                :rules="[
+                  { required: true, message: '组织不能为空', trigger: 'change' }
+                ]"
+              >
                 <el-input v-model="scope.row.groupNm" placeholder="组织" @focus="()=>openGroupTree(scope.$index)" />
               </el-form-item>
             </template>
           </el-table-column>
           <el-table-column
-            property="loanOrgLvlNm"
             label="机构级别"
           >
             <template slot-scope="scope">
-              <el-form-item :prop="scope.row.loanOrgLvlNm">
+              <el-form-item
+                :prop="'extendTable.'+scope.$index+'.loanOrgLvlNm'"
+                :rules="[
+                  { required: true, message: '机构级别不能为空', trigger: 'change' }
+                ]"
+              >
                 <el-select v-model="scope.row.loanOrgLvlNm" clearable placeholder="请选择">
                   <el-option
                     v-for="item in loanList"
@@ -82,11 +100,15 @@
             </template>
           </el-table-column>
           <el-table-column
-            property="orgNm"
             label="机构"
           >
             <template slot-scope="scope">
-              <el-form-item :prop="scope.row.orgNm">
+              <el-form-item
+                :prop="'extendTable.'+scope.$index+'.orgNm'"
+                :rules="[
+                  { required: true, message: '机构不能为空', trigger: 'change' }
+                ]"
+              >
                 <el-input
                   v-model="scope.row.orgNm"
                   placeholder="机构"
@@ -96,11 +118,15 @@
             </template>
           </el-table-column>
           <el-table-column
-            property="positionNm"
             label="岗位"
           >
             <template slot-scope="scope">
-              <el-form-item :prop="scope.row.positionNm">
+              <el-form-item
+                :prop="'extendTable.'+scope.$index+'.positionNm'"
+                :rules="[
+                  { required: true, message: '岗位不能为空', trigger: 'change' }
+                ]"
+              >
                 <el-input
                   v-model="scope.row.positionNm"
                   placeholder="岗位"
@@ -111,7 +137,7 @@
           </el-table-column>
         </el-table>
         <el-form-item>
-          <el-button type="primary">保存</el-button>
+          <el-button type="primary" @click="save">保存</el-button>
           <el-button @click="modalClose">取消</el-button>
         </el-form-item>
       </el-form>
@@ -157,7 +183,10 @@ export default {
       groupStatus: false, // 组织树弹窗状态
 	    rowIndex: null, // 当前行的下标
       orgStatus: false, // 机构树弹窗状态
-      posStatus: false // 岗位树弹窗状态
+      posStatus: false, // 岗位树弹窗状态
+      form: {
+        extendTable: this.list
+      }
     }
   },
   computed: {
@@ -180,7 +209,7 @@ export default {
     },
     // 新增
     addItem() {
-      const newArray = this.list
+      const newArray = this.form.extendTable
       const obj = {
         userRuleNm: '',
         userRuleNo: '',
@@ -198,7 +227,7 @@ export default {
       }
       newArray.push(obj)
       console.log('arr', newArray)
-      this.$emit('changeArrayNum', newArray)
+      this.form.extendTable = newArray
     },
     // 打开组织树
     openGroupTree(index) {
@@ -220,22 +249,35 @@ export default {
     updateGroupStatus(code) {
       this.groupStatus = false
       if (code.rowData) {
-        this.$emit('getChooseGroupTree', code.rowData, this.rowIndex)
+        this.form.extendTable[this.rowIndex].groupNm = code.rowData.groupNm
+        this.form.extendTable[this.rowIndex].groupNo = code.rowData.groupNo
+        // this.$emit('getChooseGroupTree', code.rowData, this.rowIndex)
       }
     },
     // 获取子组件传过来选中的机构树节点
     updateOrgStatus(code) {
       this.orgStatus = false
       if (code.rowData) {
-        this.$emit('getChooseOrgTree', code.rowData, this.rowIndex)
+        this.form.extendTable[this.rowIndex].orgNm = code.rowData.enumName
+        this.form.extendTable[this.rowIndex].orgNo = code.rowData.enumKey
+        // this.$emit('getChooseOrgTree', code.rowData, this.rowIndex)
       }
     },
     // 获取子组件传过来选中的岗位树节点
     updatePosStatus(code) {
       this.posStatus = false
       if (code.rowData) {
-        this.$emit('getChoosePosTree', code.rowData, this.rowIndex)
+        this.form.extendTable[this.rowIndex].positionNm = code.rowData.enumName
+        this.form.extendTable[this.rowIndex].positionNo = code.rowData.enumKey
+        // this.$emit('getChoosePosTree', code.rowData, this.rowIndex)
       }
+    },
+    save() {
+      this.$refs['ruleForm'].validate(valid => {
+        if (valid) {
+          this.$emit('saveAddList', this.form.extendTable)
+        }
+      })
     }
   }
 }

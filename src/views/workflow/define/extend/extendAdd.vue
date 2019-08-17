@@ -148,10 +148,7 @@
       :loan-list="loanOrgLvlist"
       :rule-list="ruleList"
       @changeVisible="updateVisible"
-      @changeArrayNum="updateArrayNum"
-      @getChooseGroupTree="updateChooseGroupTree"
-      @getChooseOrgTree="updateChooseOrgTree"
-      @getChoosePosTree="updateChoosePosTree"
+      @saveAddList="udateAddList"
     />
   </div>
 </template>
@@ -269,10 +266,41 @@ export default {
     save(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          const params = {
-            ...this.ruleForm
+          if (this.userRule.length === 0) {
+            this.$message({
+              showClose: true,
+              type: 'warning',
+              message: '请选择一条规则列表'
+            })
+            return
           }
-          this.initData(params)
+          const params = {
+            ...this.ruleForm,
+            userRuleList: JSON.stringify(this.userRule),
+            id: this.$route.query.id
+          }
+          this.$store.dispatch('extend/saveExtend', params).then(res => {
+            if (res) {
+              if (res.fault.faultCode === 'success') {
+                this.$message({
+                  showClose: true,
+                  type: 'success',
+                  message: '保存成功'
+                })
+                this.primary = this.$route.query.id
+                const param = {
+                  id: this.$route.query.id
+                }
+                this.initData(param)
+              } else {
+                this.$message({
+                  showClose: true,
+                  type: 'error',
+                  message: '保存失败'
+                })
+              }
+            }
+          })
         }
       })
     },
@@ -280,27 +308,33 @@ export default {
     goback() {
       this.$router.go(-1)
     },
-    // 获取子组件传来的array数量
-    updateArrayNum(code) {
-      console.log('3', code)
-      this.userRule = code
-    },
-    // 获取子组件传来的数据
-    updateChooseGroupTree(row, index) {
-      this.userRule[index].groupNm = row.groupNm
-      this.userRule[index].groupNo = row.groupNo
-    },
-    // 获取子组件传来的机构树数据
-    updateChooseOrgTree(row, index) {
-      console.log('row', row)
-      this.userRule[index].orgNm = row.enumName
-      this.userRule[index].orgNo = row.enumKey
-    },
-    // 获取子组件传来的岗位树数据
-    updateChoosePosTree(row, index) {
-      console.log('row', row)
-      this.userRule[index].positionNm = row.enumName
-      this.userRule[index].positionNo = row.enumKey
+    // // 获取子组件传来的array数量
+    // updateArrayNum(code) {
+    //   console.log('3', code)
+    //   this.userRule = code
+    // },
+    // // 获取子组件传来的数据
+    // updateChooseGroupTree(row, index) {
+    //   this.userRule[index].groupNm = row.groupNm
+    //   this.userRule[index].groupNo = row.groupNo
+    // },
+    // // 获取子组件传来的机构树数据
+    // updateChooseOrgTree(row, index) {
+    //   console.log('row', row)
+    //   this.userRule[index].orgNm = row.enumName
+    //   this.userRule[index].orgNo = row.enumKey
+    // },
+    // // 获取子组件传来的岗位树数据
+    // updateChoosePosTree(row, index) {
+    //   console.log('row', row)
+    //   this.userRule[index].positionNm = row.enumName
+    //   this.userRule[index].positionNo = row.enumKey
+    // },
+    // 获取子列表的数据
+    udateAddList(code) {
+      console.log('new', code)
+      console.log('old', this.userRule)
+      this.visible = false
     }
   }
 }

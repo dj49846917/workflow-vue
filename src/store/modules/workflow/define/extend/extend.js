@@ -120,6 +120,16 @@ const actions = {
         reject(error)
       })
     })
+  },
+  // 保存
+  saveExtend({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+      saveItem(payload).then(response => {
+        resolve(response)
+      }).catch(error => {
+        reject(error)
+      })
+    })
   }
 }
 
